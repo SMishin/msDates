@@ -4,11 +4,10 @@ import "angular-aria";
 import "angular-messages";
 import "angular-material";
 
-import {AppCtrl} from "./AppCtrl";
-import {module} from './ms-dates'
+import {AppCtrl} from "./app-ctrl";
+import {msDatesModule} from './ms-dates'
 
-angular.module('myApp', [module.name])
+angular.module('myApp', [msDatesModule.name])
     .controller('appCtrl', AppCtrl)
-
 ;
 

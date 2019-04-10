@@ -1,0 +1,17 @@
+.datepicker {
+    width: 380px;
+    padding: 30px;
+}
+
+.datepicker .datepicker-range,
+.datepicker .datepicker-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.datepicker .datepicker-actions button {
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    font-size: 12px;
+}

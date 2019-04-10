@@ -1,0 +1,19 @@
+<div class="datepicker">
+    <div class="datepicker-range">
+        <div class="datepicker-range_item">
+            From <br/>
+            <md-datepicker ng-model="vm.dateFrom" ng-change="vm.onChange()"></md-datepicker>
+        </div>
+        <div class="datepicker-range_item">
+            To <br/>
+            <md-datepicker ng-model="vm.dateTo" ng-change="vm.onChange()" md-min-date="vm.model.from"></md-datepicker>
+        </div>
+    </div>
+    <div class="datepicker-actions">
+        <button ng-click="vm.setDates(vm.dateSetType.yesterday)">yesterday</button>
+        <button ng-click="vm.setDates(vm.dateSetType.today)">today</button>
+        <button ng-click="vm.setDates(vm.dateSetType.twoWeeks)">2 weeks</button>
+        <button ng-click="vm.setDates(vm.dateSetType.month)">month</button>
+        <button ng-click="vm.setDates(vm.dateSetType.all)">all</button>
+    </div>
+</div>

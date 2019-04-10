@@ -1,41 +1,19 @@
 import * as moment from 'moment';
+import template from './template.html';
 
-const dateSetType = {
-    yesterday: 1,
-    today: 2,
-    twoWeeks: 3,
-    month: 4,
-    all: 5,
+enum dateSetType {
+    yesterday,
+    today,
+    twoWeeks,
+    month,
+    all,
 };
 
-export class msDatesComponent {
+class msDatesComponentController {
 
-    public static config = {
-        name: 'msDates',
-
-        template: '<div> ' +
-            'From  <md-datepicker ng-model="vm.model.from" ng-change="vm.onChange()" ></md-datepicker>  ' +
-            'To <md-datepicker ng-model="vm.model.to" ng-change="vm.onChange()" md-min-date="vm.model.form"></md-datepicker>  ' +
-            '</div>' +
-            '<div>' +
-            '<button ng-click="vm.setDates(vm.dateSetType.yesterday)">yesterday</button>' +
-            '<button ng-click="vm.setDates(vm.dateSetType.today)">today</button>' +
-            '<button ng-click="vm.setDates(vm.dateSetType.twoWeeks)">2 weeks</button>' +
-            '<button ng-click="vm.setDates(vm.dateSetType.month)">month</button>' +
-            '<button ng-click="vm.setDates(vm.dateSetType.all)">all</button>' +
-            '</div>',
-
-        bindings: {
-            dateFrom: '<',
-            dateTo: '<',
-            mcChange: '&'
-        },
-        controller: msDatesComponent,
-        controllerAs: 'vm'
-    };
     private dateSetType = dateSetType;
-    public dateFrom: string;
-    public dateTo: string;
+    public dateFrom: string = null;
+    public dateTo: string = null;
 
     private model: {
         from: Date
@@ -45,13 +23,12 @@ export class msDatesComponent {
     private mcChange: any;
 
     constructor() {
-
     }
 
     private setDates(setType) {
         switch (setType) {
             case dateSetType.yesterday: {
-                this.model.from = this.model.to = moment().subtract(1, 'days').toDate();
+                this.model.from = this.model.to = moment().subtract(1, 'day').toDate();
                 break;
             }
             case dateSetType.today: {
@@ -60,14 +37,14 @@ export class msDatesComponent {
             }
             case dateSetType.twoWeeks: {
                 let mDate = moment();
-                this.model.from = mDate.toDate();
-                this.model.to = mDate.add(14, 'days').toDate();
+                this.model.to = mDate.toDate();
+                this.model.from = mDate.add(-14, 'days').toDate();
                 break;
             }
             case dateSetType.month: {
                 let mDate = moment();
-                this.model.from = mDate.toDate();
-                this.model.to = mDate.add(30, 'days').toDate();
+                this.model.to = mDate.toDate();
+                this.model.from = mDate.add(-30, 'days').toDate();
                 break;
             }
             case dateSetType.all: {
@@ -76,40 +53,45 @@ export class msDatesComponent {
             }
         }
 
-        this.onChange();
+        this.formatDates();
+        this.emitMsChange();
     }
 
     public $onInit() {
+
+        let format = 'YYYYMMDD';
         this.model = this.newModel(this.dateFrom, this.dateTo);
-    }
 
-    public $onChanges(changesObj) {
+        this.formatDates();
 
-        !this.model && (this.model = this.newModel(this.dateFrom, this.dateTo));
+        let isFromSame = moment(this.model.from).format(format) === moment(this.dateFrom).format(format);
+        let isToSame = moment(this.model.to).format(format) === moment(this.dateTo).format(format);
 
-        if (!changesObj) {
-            return;
+        if (!isFromSame || !isToSame) {
+            this.onChange();
         }
-
-        // changesObj.dateTo && (this.model.to = new Date(changesObj.dateTo.currentValue));
-        //changesObj.dateFrom && (this.model.from = new Date(changesObj.dateFrom.currentValue));
-
-        this.model = this.newModel(
-            (changesObj.dateFrom && new Date(changesObj.dateFrom.currentValue)) || this.model.from,
-            (changesObj.dateTo && new Date(changesObj.dateTo.currentValue)) || this.model.to
-        );
 
     }
 
     public onChange() {
 
-        console.log('onChange');
+        this.model = this.newModel(this.dateFrom, this.dateTo)
+
+        this.formatDates();
+        this.emitMsChange();
+    }
+
+    private formatDates(): void {
+        this.dateTo = this.model.to ? moment(this.model.to).format('YYYY-MM-DD') : null;
+        this.dateFrom = this.model.from ? moment(this.model.from).format('YYYY-MM-DD') : null;
+    }
+
+    private emitMsChange() {
 
         this.mcChange({
-            from: this.model.from ? moment(this.model.from).format('YYYY-MM-DD') : null,
-            to: this.model.to ? moment(this.model.to).format('YYYY-MM-DD') : null
-        })
-        ;
+            from: this.dateTo,
+            to: this.dateFrom
+        });
     }
 
     private newModel(fromDate, toDate) {
@@ -118,11 +100,25 @@ export class msDatesComponent {
         let to = toDate && new Date(toDate);
 
         if (to && from && to < from) {
-            to = null;
+            to = from;
         }
 
         return {from, to};
     }
 }
+
+export const msDatesComponent = {
+    name: 'msDates',
+
+    template: template,
+
+    bindings: {
+        dateFrom: '=',
+        dateTo: '=',
+        mcChange: '&'
+    },
+    controller: msDatesComponentController,
+    controllerAs: 'vm'
+};
 
 
