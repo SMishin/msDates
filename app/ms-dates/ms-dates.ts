@@ -23,6 +23,7 @@ class msDatesComponentController {
     private mcChange: any;
 
     constructor() {
+
     }
 
     private setDates(setType) {
@@ -53,16 +54,13 @@ class msDatesComponentController {
             }
         }
 
-        this.formatDates();
-        this.emitMsChange();
+        this.onChange();
     }
 
     public $onInit() {
 
         let format = 'YYYYMMDD';
         this.model = this.newModel(this.dateFrom, this.dateTo);
-
-        this.formatDates();
 
         let isFromSame = moment(this.model.from).format(format) === moment(this.dateFrom).format(format);
         let isToSame = moment(this.model.to).format(format) === moment(this.dateTo).format(format);
@@ -73,25 +71,29 @@ class msDatesComponentController {
 
     }
 
+    public $onChanges(changesObj) {
+
+        !this.model && (this.model = this.newModel(this.dateFrom, this.dateTo));
+
+        if (!changesObj) {
+            return;
+        }
+
+        this.model = this.newModel(
+            (changesObj.dateFrom && changesObj.dateFrom.currentValue && new Date(changesObj.dateFrom.currentValue)) || this.model.from,
+            (changesObj.dateTo && changesObj.dateTo.currentValue && new Date(changesObj.dateTo.currentValue)) || this.model.to
+        );
+
+        console.log(this.model);
+    }
+
     public onChange() {
 
-        this.model = this.newModel(this.dateFrom, this.dateTo)
-
-        this.formatDates();
-        this.emitMsChange();
-    }
-
-    private formatDates(): void {
-        this.dateTo = this.model.to ? moment(this.model.to).format('YYYY-MM-DD') : null;
-        this.dateFrom = this.model.from ? moment(this.model.from).format('YYYY-MM-DD') : null;
-    }
-
-    private emitMsChange() {
-
         this.mcChange({
-            from: this.dateTo,
-            to: this.dateFrom
-        });
+            from: this.model.from ? moment(this.model.from).format('YYYY-MM-DD') : null,
+            to: this.model.to ? moment(this.model.to).format('YYYY-MM-DD') : null
+        })
+        ;
     }
 
     private newModel(fromDate, toDate) {
@@ -113,8 +115,8 @@ export const msDatesComponent = {
     template: template,
 
     bindings: {
-        dateFrom: '=',
-        dateTo: '=',
+        dateFrom: '<',
+        dateTo: '<',
         mcChange: '&'
     },
     controller: msDatesComponentController,

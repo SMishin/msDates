@@ -2,11 +2,11 @@
     <div class="datepicker-range">
         <div class="datepicker-range_item">
             From <br/>
-            <md-datepicker ng-model="vm.dateFrom" ng-change="vm.onChange()"></md-datepicker>
+            <md-datepicker ng-model="vm.model.from" ng-change="vm.onChange()"></md-datepicker>
         </div>
         <div class="datepicker-range_item">
             To <br/>
-            <md-datepicker ng-model="vm.dateTo" ng-change="vm.onChange()" md-min-date="vm.model.from"></md-datepicker>
+            <md-datepicker ng-model="vm.model.to" ng-change="vm.onChange()" md-min-date="vm.model.from"></md-datepicker>
         </div>
     </div>
     <div class="datepicker-actions">
